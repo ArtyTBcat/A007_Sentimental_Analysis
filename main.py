@@ -9,3 +9,9 @@ for line in data_file:
 checkin_df = pd.DataFrame(data)
 print(checkin_df)
 data_file.close()
+
+args = Namespace(
+    raw_train_dataset =
+
+)
+item.items*()
