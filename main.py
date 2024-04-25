@@ -1,17 +1,58 @@
-import json, os
-import pandas as pd
+import nltk
 
-file_path = os.path.join("E:/Necleotide Codes/archive", "yelp_academic_dataset_checkin.json")
-data_file = open(file_path)
-data = []
-for line in data_file:
-    data.append(json.loads(line))
-checkin_df = pd.DataFrame(data)
-print(checkin_df)
-data_file.close()
+nltk.download('sentiwordnet')
+nltk.download('wordnet')
+from nltk.corpus import wordnet as wn
+from nltk.corpus import sentiwordnet as swn
 
-args = Namespace(
-    raw_train_dataset =
+list(swn.senti_synsets('slow'))
+sentence = 'It was a really good day'
+from nltk.tag import pos_tag
 
-)
-item.items*()
+token = nltk.word_tokenize(sentence)
+after_tagging = nltk.pos_tag(token)
+print(token)
+print(after_tagging)
+
+
+def penn_to_wn(tag):
+    """
+    Convert between the PennTreebank tags to simple Wordnet tags
+    """
+    if tag.startswith('J'):
+        return wn.ADJ
+    elif tag.startswith('N'):
+        return wn.NOUN
+    elif tag.startswith('R'):
+        return wn.ADV
+    elif tag.startswith('V'):
+        return wn.VERB
+    return None
+
+
+sentiment = 0.0
+# tokens_count = 0
+from nltk.stem import WordNetLemmatizer
+
+lemmatizer = WordNetLemmatizer()
+for word, tag in after_tagging:
+    wn_tag = penn_to_wn(tag)
+    if wn_tag not in (wn.NOUN, wn.ADJ, wn.ADV):
+        continue
+
+    lemma = lemmatizer.lemmatize(word, pos=wn_tag)
+    if not lemma:
+        continue
+
+    synsets = wn.synsets(lemma, pos=wn_tag)
+    if not synsets:
+        continue
+
+    # Take the first sense, the most common
+    synset = synsets[0]
+    swn_synset = swn.senti_synset(synset.name())
+    print(swn_synset)
+
+    sentiment += swn_synset.pos_score() - swn_synset.neg_score()
+    tokens_count += 1
+print(sentiment)
